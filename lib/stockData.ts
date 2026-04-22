@@ -8,9 +8,9 @@
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const YahooFinanceClass = require("yahoo-finance2").default;
 
-// Singleton instance (module-level, shared across calls in the same worker)
+// Singleton instance — suppress console noise, use chart() instead of deprecated historical()
 const yf = new YahooFinanceClass({
-  suppressNotices: ["yahooSurvey"],
+  suppressNotices: ["yahooSurvey", "ripHistorical"],
 });
 
 import { calculateScore, ScoreBreakdown, ScoringInputs } from "./scoring";
@@ -76,20 +76,15 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
   try {
     const modules = ["price", "defaultKeyStatistics", "summaryDetail", "assetProfile"];
 
+    const period1 = new Date(Date.now() - 220 * 24 * 60 * 60 * 1000)
+      .toISOString()
+      .split("T")[0];
+    const period2 = new Date().toISOString().split("T")[0];
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [summary, history]: [any, any[]] = await Promise.all([
+    const [summary, chartData]: [any, any] = await Promise.all([
       yf.quoteSummary(ticker, { modules }, { validateResult: false }),
-      yf.historical(
-        ticker,
-        {
-          // Use ISO date string — yf v3 validates period1 strictly
-          period1: new Date(Date.now() - 220 * 24 * 60 * 60 * 1000)
-            .toISOString()
-            .split("T")[0],
-          interval: "1d",
-        },
-        { validateResult: false }
-      ),
+      yf.chart(ticker, { period1, period2, interval: "1d" }, { validateResult: false }),
     ]);
 
     const price = summary.price;
@@ -106,9 +101,11 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
     const avgVolume: number =
       detail?.averageVolume ?? detail?.averageVolume10days ?? 0;
 
-    // Build closes and volumes arrays for technicals
+    // Build closes and volumes arrays for technicals (chart() returns .quotes array)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const sortedHistory = [...history].sort(
+    const rawQuotes: any[] = chartData?.quotes ?? [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const sortedHistory = [...rawQuotes].sort(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()
     );
