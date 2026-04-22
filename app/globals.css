@@ -38,6 +38,10 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Flex column layout — footer always at bottom, never overlapping content */
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
 }
 
 /* TradingView widget transparent bg override */
@@ -84,20 +88,16 @@ html {
   scroll-padding-top: 60px;
 }
 
-/* Layout shell — footer always stays at or below viewport bottom */
-.site-shell {
-  display: flex;
-  flex-direction: column;
-  min-height: 100svh;
-}
-
-.site-main {
+main {
   flex: 1 0 auto;
+  /* New stacking context — seals all z-index/compositing inside main */
+  isolation: isolate;
 }
 
-.site-footer {
+footer {
   flex-shrink: 0;
   border-top: 1px solid var(--border);
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
+  /* No positioning, no z-index — plain block in document flow after <main> */
 }
