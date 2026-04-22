@@ -10,19 +10,14 @@ export const WATCHLIST: string[] = [
   // EV / clean energy — historically heavy short interest
   "LCID",
   "RIVN",
-  "NKLA",
-  "FFIE",
-  "GOEV",
   "CHPT",
   "PLUG",
   // Biotech / pharma (volatile, often high SI)
   "SAVA",
   "BYFC",
-  "GNUS",
   // Retail / consumer — structurally challenged, heavy SI
   "BYND",
   "SPCE",
-  "PRTY",
   // Fintech / crypto adjacent
   "MSTR",
   "COIN",
@@ -32,7 +27,6 @@ export const WATCHLIST: string[] = [
   "WKHS",
   "GENI",
   "OPEN",
-  "WISH",
   // Additional speculative names
   "SKLZ",
   "BARK",

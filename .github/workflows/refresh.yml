@@ -1,0 +1,44 @@
+name: Weekly Stock Data Refresh
+
+on:
+  # Every Monday at 7:00 AM ET (11:00 UTC) — before US market open
+  schedule:
+    - cron: "0 11 * * 1"
+  # Also on the 1st and 15th (aligned with FINRA biweekly SI reporting)
+  # schedule:
+  #   - cron: "0 11 1,15 * *"
+  # Allow manual trigger from the GitHub Actions UI at any time
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    name: Fetch & Score Stocks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Fetch stock data
+        run: npm run fetch-stocks
+
+      - name: Commit updated stocks.json
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: weekly stock data refresh [skip ci]"
+          file_pattern: "public/data/stocks.json"
+          commit_user_name: "SqueezeRadar Bot"
+          commit_user_email: "bot@squeezeradar.app"
+          commit_author: "SqueezeRadar Bot <bot@squeezeradar.app>"

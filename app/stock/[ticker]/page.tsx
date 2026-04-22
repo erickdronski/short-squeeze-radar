@@ -1,25 +1,23 @@
-import { unstable_cache } from "next/cache";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, TrendingUp, TrendingDown, ExternalLink } from "lucide-react";
-import { fetchStockData, formatNumber, formatBigNumber, formatPct, StockData } from "@/lib/stockData";
-import { WATCHLIST } from "@/lib/watchlist";
+import { formatNumber, formatBigNumber, formatPct } from "@/lib/stockData";
+import { loadAllStocks, loadStock } from "@/lib/staticData";
 import ScoreBreakdownCard from "@/components/ScoreBreakdownCard";
 import TradingViewChart from "@/components/TradingViewChart";
 import { SCORE_COLOR_MAP } from "@/lib/scoring";
 
-export const revalidate = 3600;
+// Fully static — no API calls at runtime
+export const dynamic = "force-static";
 
 export async function generateStaticParams() {
-  return WATCHLIST.map((ticker) => ({ ticker: ticker.toLowerCase() }));
+  const { stocks } = loadAllStocks();
+  // Generate params for all stocks in the JSON + any fallback
+  const tickers = stocks.length > 0
+    ? stocks.map((s) => s.ticker.toLowerCase())
+    : ["gme", "amc", "lcid", "rivn", "bynd", "spce", "plug", "chpt", "mstr", "coin"];
+  return tickers.map((ticker) => ({ ticker }));
 }
-
-const getCachedStock = (ticker: string) =>
-  unstable_cache(
-    () => fetchStockData(ticker.toUpperCase()),
-    [`stock-${ticker.toUpperCase()}`],
-    { revalidate: 3600 }
-  )();
 
 export default async function StockPage({
   params,
@@ -27,7 +25,7 @@ export default async function StockPage({
   params: Promise<{ ticker: string }>;
 }) {
   const { ticker } = await params;
-  const stock = await getCachedStock(ticker);
+  const stock = loadStock(ticker);
 
   if (!stock) {
     notFound();

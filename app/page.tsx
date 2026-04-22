@@ -1,37 +1,31 @@
-import { unstable_cache } from "next/cache";
-import { fetchAllStocks, StockData } from "@/lib/stockData";
-import { WATCHLIST, MIN_SCORE_THRESHOLD, MAX_DISPLAY } from "@/lib/watchlist";
+import { StockData } from "@/lib/stockData";
+import { loadAllStocks } from "@/lib/staticData";
+import { MIN_SCORE_THRESHOLD, MAX_DISPLAY } from "@/lib/watchlist";
 import SqueezeExplainer from "@/components/SqueezeExplainer";
 import StockTile from "@/components/StockTile";
 import { Activity, RefreshCw } from "lucide-react";
 
-// Cache the entire fetch for 1 hour, revalidate in the background
-const getCachedStocks = unstable_cache(
-  async () => {
-    const stocks = await fetchAllStocks(WATCHLIST);
-    return stocks
-      .filter((s) => s.score.totalScore >= MIN_SCORE_THRESHOLD)
-      .sort((a, b) => b.score.totalScore - a.score.totalScore)
-      .slice(0, MAX_DISPLAY);
-  },
-  ["stocks-dashboard"],
-  { revalidate: 3600 } // 1 hour
-);
+// Static page — data comes from public/data/stocks.json, refreshed by GitHub Actions weekly.
+// No API calls at runtime; Vercel redeploys automatically when the JSON file changes.
+export const dynamic = "force-static";
 
-export const revalidate = 3600;
+export default function HomePage() {
+  const { stocks: allStocks, lastUpdated } = loadAllStocks();
 
-export default async function HomePage() {
-  const stocks = await getCachedStocks();
-  const fetchedAt =
-    stocks[0]?.fetchedAt
-      ? new Date(stocks[0].fetchedAt).toLocaleString("en-US", {
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-          timeZoneName: "short",
-        })
-      : null;
+  const stocks = allStocks
+    .filter((s) => s.score.totalScore >= MIN_SCORE_THRESHOLD)
+    .sort((a, b) => b.score.totalScore - a.score.totalScore)
+    .slice(0, MAX_DISPLAY);
+
+  const fetchedAt = lastUpdated
+    ? new Date(lastUpdated).toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        timeZoneName: "short",
+      })
+    : null;
 
   const extreme = stocks.filter((s) => s.score.totalScore >= 71);
   const high = stocks.filter(
@@ -61,7 +55,7 @@ export default async function HomePage() {
         </h1>
         <p className="text-[var(--text-secondary)] text-base mt-2 max-w-2xl leading-relaxed">
           Tracking {stocks.length} stocks with elevated short squeeze conditions,
-          scored across 6 quantitative indicators updated hourly.
+          scored across 6 quantitative indicators. Data refreshes weekly.
         </p>
       </div>
 
@@ -156,7 +150,7 @@ function EmptyState() {
       </p>
       <p className="text-[var(--text-muted)] text-sm">
         All watchlist stocks are below the minimum confidence score.
-        Data refreshes hourly.
+        Data refreshes every Monday morning.
       </p>
     </div>
   );
