@@ -375,14 +375,6 @@ export default async function StockPage({
         </div>
       </div>
 
-      {/* Disclaimer */}
-      <div className="mt-10 text-xs text-[var(--text-muted)] leading-relaxed p-4 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)]">
-        <strong className="text-[var(--text-secondary)]">Risk disclaimer: </strong>
-        Short squeezes are inherently unpredictable and can reverse violently. High confidence
-        scores indicate structural conditions only — a catalyst is required to trigger an actual
-        squeeze and timing cannot be predicted. Past squeezes (GameStop, AMC, VW) do not guarantee
-        future outcomes. This is not financial advice.
-      </div>
     </div>
   );
 }

@@ -40,17 +40,6 @@ export default function RootLayout({
         <main>
           {children}
         </main>
-        <footer>
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-[var(--text-muted)] text-xs text-center">
-              SqueezeRadar — for educational purposes only. Not financial advice.
-              Short interest data from FINRA via Yahoo Finance (biweekly, ~2–3 week lag).
-            </p>
-            <p className="text-[var(--text-muted)] text-xs whitespace-nowrap">
-              Updates weekly · Charts by TradingView
-            </p>
-          </div>
-        </footer>
       </body>
     </html>
   );

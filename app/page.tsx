@@ -94,15 +94,6 @@ export default function HomePage() {
         </div>
       )}
 
-      {/* Disclaimer */}
-      <div className="mt-14 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-4 text-xs text-[var(--text-muted)] leading-relaxed">
-        <span className="text-[var(--text-secondary)] font-medium">Disclaimer: </span>
-        SqueezeRadar is a data analysis and education tool only. Nothing here constitutes
-        financial advice or a recommendation to buy or sell any security. Short interest
-        data from FINRA reporting carries a 2–3 week lag. Scores reflect structural
-        conditions only — a catalyst is required for a squeeze to develop. Always do
-        your own research.
-      </div>
     </div>
   );
 }

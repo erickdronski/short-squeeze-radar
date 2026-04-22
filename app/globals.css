@@ -94,10 +94,3 @@ main {
   isolation: isolate;
 }
 
-footer {
-  flex-shrink: 0;
-  border-top: 1px solid var(--border);
-  padding-top: 1.5rem;
-  padding-bottom: 1.5rem;
-  /* No positioning, no z-index — plain block in document flow after <main> */
-}
