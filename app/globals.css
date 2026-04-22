@@ -1,26 +1,71 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-primary: #181512;
+  --bg-secondary: #201c18;
+  --bg-card: #262018;
+  --bg-card-hover: #2e2820;
+  --border: #3a332a;
+  --border-subtle: #2a2420;
+
+  --orange: #e07848;
+  --orange-light: #f0956a;
+  --orange-dim: #a85830;
+  --orange-bg: #3d2418;
+
+  --beige: #e8d8c0;
+  --beige-muted: #a89070;
+
+  --text-primary: #ece0d0;
+  --text-secondary: #8a7a6a;
+  --text-muted: #5a4a3a;
+
+  --green: #4a9a6a;
+  --red: #b05040;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* TradingView widget transparent bg override */
+.tradingview-widget-container iframe {
+  background: transparent !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-pulse {
+  animation: pulse-dot 2s ease-in-out infinite;
 }

@@ -1,65 +1,163 @@
-import Image from "next/image";
+import { unstable_cache } from "next/cache";
+import { fetchAllStocks, StockData } from "@/lib/stockData";
+import { WATCHLIST, MIN_SCORE_THRESHOLD, MAX_DISPLAY } from "@/lib/watchlist";
+import SqueezeExplainer from "@/components/SqueezeExplainer";
+import StockTile from "@/components/StockTile";
+import { Activity, RefreshCw } from "lucide-react";
 
-export default function Home() {
+// Cache the entire fetch for 1 hour, revalidate in the background
+const getCachedStocks = unstable_cache(
+  async () => {
+    const stocks = await fetchAllStocks(WATCHLIST);
+    return stocks
+      .filter((s) => s.score.totalScore >= MIN_SCORE_THRESHOLD)
+      .sort((a, b) => b.score.totalScore - a.score.totalScore)
+      .slice(0, MAX_DISPLAY);
+  },
+  ["stocks-dashboard"],
+  { revalidate: 3600 } // 1 hour
+);
+
+export const revalidate = 3600;
+
+export default async function HomePage() {
+  const stocks = await getCachedStocks();
+  const fetchedAt =
+    stocks[0]?.fetchedAt
+      ? new Date(stocks[0].fetchedAt).toLocaleString("en-US", {
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          timeZoneName: "short",
+        })
+      : null;
+
+  const extreme = stocks.filter((s) => s.score.totalScore >= 71);
+  const high = stocks.filter(
+    (s) => s.score.totalScore >= 41 && s.score.totalScore < 71
+  );
+  const moderate = stocks.filter((s) => s.score.totalScore < 41);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      {/* Page hero */}
+      <div className="mb-10">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-2 h-2 rounded-full bg-[var(--orange)] animate-pulse" />
+          <span className="text-[var(--text-muted)] text-xs uppercase tracking-widest">
+            Live Watchlist
+          </span>
+          {fetchedAt && (
+            <span className="ml-auto flex items-center gap-1 text-xs text-[var(--text-muted)]">
+              <RefreshCw className="w-3 h-3" />
+              {fetchedAt}
+            </span>
+          )}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+        <h1 className="text-[var(--text-primary)] text-3xl sm:text-4xl font-bold leading-tight">
+          Short Squeeze{" "}
+          <span style={{ color: "var(--orange)" }}>Radar</span>
+        </h1>
+        <p className="text-[var(--text-secondary)] text-base mt-2 max-w-2xl leading-relaxed">
+          Tracking {stocks.length} stocks with elevated short squeeze conditions,
+          scored across 6 quantitative indicators updated hourly.
+        </p>
+      </div>
+
+      {/* Explainer + methodology */}
+      <SqueezeExplainer />
+
+      {/* Stocks */}
+      {stocks.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <div className="space-y-10">
+          {extreme.length > 0 && (
+            <StockGroup
+              label="🔥 High Confidence"
+              sublabel="Multiple extreme indicators aligned"
+              stocks={extreme}
+              accent="var(--orange)"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+          )}
+          {high.length > 0 && (
+            <StockGroup
+              label="⚡ Elevated Conditions"
+              sublabel="Notable squeeze setup building"
+              stocks={high}
+              accent="#c8a840"
+            />
+          )}
+          {moderate.length > 0 && (
+            <StockGroup
+              label="👀 On Watch"
+              sublabel="Conditions developing — worth monitoring"
+              stocks={moderate}
+              accent="#6b7a8a"
+            />
+          )}
         </div>
-      </main>
+      )}
+
+      {/* Disclaimer */}
+      <div className="mt-14 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-4 text-xs text-[var(--text-muted)] leading-relaxed">
+        <span className="text-[var(--text-secondary)] font-medium">Disclaimer: </span>
+        SqueezeRadar is a data analysis and education tool only. Nothing here constitutes
+        financial advice or a recommendation to buy or sell any security. Short interest
+        data from FINRA reporting carries a 2–3 week lag. Scores reflect structural
+        conditions only — a catalyst is required for a squeeze to develop. Always do
+        your own research.
+      </div>
+    </div>
+  );
+}
+
+function StockGroup({
+  label,
+  sublabel,
+  stocks,
+  accent,
+}: {
+  label: string;
+  sublabel: string;
+  stocks: StockData[];
+  accent: string;
+}) {
+  return (
+    <section>
+      <div className="flex items-baseline gap-3 mb-4">
+        <h2 className="text-base font-semibold" style={{ color: accent }}>
+          {label}
+        </h2>
+        <span className="text-[var(--text-muted)] text-xs">{sublabel}</span>
+        <span
+          className="ml-auto text-xs font-medium px-2 py-0.5 rounded-full"
+          style={{ background: `${accent}20`, color: accent }}
+        >
+          {stocks.length} stock{stocks.length !== 1 ? "s" : ""}
+        </span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {stocks.map((stock) => (
+          <StockTile key={stock.ticker} stock={stock} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function EmptyState() {
+  return (
+    <div className="text-center py-20 rounded-2xl border border-[var(--border)] bg-[var(--bg-card)]">
+      <Activity className="w-10 h-10 text-[var(--text-muted)] mx-auto mb-4" />
+      <p className="text-[var(--text-secondary)] font-medium mb-1">
+        No stocks above threshold
+      </p>
+      <p className="text-[var(--text-muted)] text-sm">
+        All watchlist stocks are below the minimum confidence score.
+        Data refreshes hourly.
+      </p>
     </div>
   );
 }
