@@ -2,7 +2,7 @@ import { StockData } from "@/lib/stockData";
 import { loadAllStocks } from "@/lib/staticData";
 import { MIN_SCORE_THRESHOLD, MAX_DISPLAY } from "@/lib/watchlist";
 import SqueezeExplainer from "@/components/SqueezeExplainer";
-import StockTile from "@/components/StockTile";
+import StockGrid from "@/components/StockGrid";
 import { Activity, RefreshCw } from "lucide-react";
 
 // Static page — data comes from public/data/stocks.json, refreshed by GitHub Actions weekly.
@@ -132,11 +132,8 @@ function StockGroup({
           {stocks.length} stock{stocks.length !== 1 ? "s" : ""}
         </span>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-        {stocks.map((stock) => (
-          <StockTile key={stock.ticker} stock={stock} />
-        ))}
-      </div>
+      {/* StockGrid is a client component — fetches live prices once for all tickers */}
+      <StockGrid stocks={stocks} />
     </section>
   );
 }

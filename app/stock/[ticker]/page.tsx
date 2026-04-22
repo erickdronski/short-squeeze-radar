@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, TrendingUp, TrendingDown, ExternalLink } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { formatNumber, formatBigNumber, formatPct } from "@/lib/stockData";
 import { loadAllStocks, loadStock } from "@/lib/staticData";
 import ScoreBreakdownCard from "@/components/ScoreBreakdownCard";
 import TradingViewChart from "@/components/TradingViewChart";
+import LivePrice from "@/components/LivePrice";
 import { SCORE_COLOR_MAP } from "@/lib/scoring";
 
 // Fully static — no API calls at runtime
@@ -31,7 +32,6 @@ export default async function StockPage({
     notFound();
   }
 
-  const isUp = stock.priceChangePct >= 0;
   const hexColor = SCORE_COLOR_MAP[stock.score.color];
 
   return (
@@ -68,25 +68,12 @@ export default async function StockPage({
             </p>
           )}
 
-          {/* Price */}
-          <div className="flex items-baseline gap-3 mt-4">
-            <span className="text-[var(--text-primary)] text-3xl font-bold tabular-nums">
-              ${formatNumber(stock.price)}
-            </span>
-            <span
-              className={`text-base font-medium flex items-center gap-1 ${
-                isUp ? "text-emerald-400" : "text-red-400"
-              }`}
-            >
-              {isUp ? (
-                <TrendingUp className="w-4 h-4" />
-              ) : (
-                <TrendingDown className="w-4 h-4" />
-              )}
-              {isUp ? "+" : ""}
-              {formatNumber(stock.priceChangePct)}% today
-            </span>
-          </div>
+          {/* Price — LivePrice is a client component, fetches /api/quotes on mount */}
+          <LivePrice
+            ticker={stock.ticker}
+            staticPrice={stock.price}
+            staticChangePct={stock.priceChangePct}
+          />
         </div>
 
         {/* External links */}

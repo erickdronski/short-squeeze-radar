@@ -7,11 +7,17 @@ import TradingViewMini from "./TradingViewMini";
 
 interface StockTileProps {
   stock: StockData;
+  /** Live price from /api/quotes — overrides static value when available */
+  livePrice?: number;
+  /** Live change % as decimal (e.g. 0.023 = +2.3%) — overrides static value */
+  liveChangePct?: number;
 }
 
-export default function StockTile({ stock }: StockTileProps) {
+export default function StockTile({ stock, livePrice, liveChangePct }: StockTileProps) {
   const { score } = stock;
-  const isUp = stock.priceChangePct >= 0;
+  const price = livePrice ?? stock.price;
+  const changePct = liveChangePct ?? stock.priceChangePct;
+  const isUp = changePct >= 0;
   const hexColor = SCORE_COLOR_MAP[score.color];
 
   return (
@@ -54,7 +60,7 @@ export default function StockTile({ stock }: StockTileProps) {
       <div className="px-4 pb-3 flex items-center justify-between">
         <div>
           <span className="text-[var(--text-primary)] font-semibold text-base">
-            ${formatNumber(stock.price)}
+            ${formatNumber(price)}
           </span>
           <span
             className={`ml-2 text-sm font-medium ${
@@ -63,7 +69,7 @@ export default function StockTile({ stock }: StockTileProps) {
           >
             {isUp ? <TrendingUp className="inline w-3.5 h-3.5 mr-0.5" /> : <TrendingDown className="inline w-3.5 h-3.5 mr-0.5" />}
             {isUp ? "+" : ""}
-            {formatNumber(stock.priceChangePct)}%
+            {formatNumber(changePct)}%
           </span>
         </div>
         <span
