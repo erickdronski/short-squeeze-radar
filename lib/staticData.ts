@@ -11,7 +11,7 @@
 
 import { readFileSync } from "fs";
 import path from "path";
-import { StockData } from "./stockData";
+import { StockData } from "./stockTypes";
 
 interface StocksFile {
   stocks: StockData[];

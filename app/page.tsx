@@ -1,4 +1,4 @@
-import { StockData } from "@/lib/stockData";
+import { StockData } from "@/lib/stockTypes";
 import { loadAllStocks } from "@/lib/staticData";
 import { MIN_SCORE_THRESHOLD, MAX_DISPLAY } from "@/lib/watchlist";
 import SqueezeExplainer from "@/components/SqueezeExplainer";

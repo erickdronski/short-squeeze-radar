@@ -10,7 +10,7 @@
 
 import { useLiveQuotes } from "@/hooks/useLiveQuotes";
 import StockTile from "./StockTile";
-import type { StockData } from "@/lib/stockData";
+import type { StockData } from "@/lib/stockTypes";
 
 interface StockGridProps {
   stocks: StockData[];

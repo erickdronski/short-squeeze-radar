@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { TrendingUp, TrendingDown, Activity } from "lucide-react";
-import { StockData, formatNumber, formatBigNumber } from "@/lib/stockData";
+import { StockData, formatNumber, formatBigNumber } from "@/lib/stockTypes";
 import { scoreBgClass, SCORE_COLOR_MAP } from "@/lib/scoring";
 import ScoreArc from "./ScoreArc";
 import TradingViewMini from "./TradingViewMini";

@@ -3,6 +3,10 @@
  * All calls are server-side only. Cache revalidates every hour.
  *
  * yahoo-finance2 v3 requires instantiation: new YahooFinance()
+ *
+ * NOTE: Do NOT import this file from "use client" components — it pulls in
+ * yahoo-finance2 which has Node-only dependencies. Import types and formatters
+ * from lib/stockTypes.ts instead (zero server deps, safe everywhere).
  */
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -15,6 +19,12 @@ const yf = new YahooFinanceClass({
 
 import { calculateScore, ScoreBreakdown, ScoringInputs } from "./scoring";
 import { rsi, relativeVolume, movingAverageSignals } from "./technicals";
+import { StockData } from "./stockTypes";
+
+// Re-export pure types and formatters from stockTypes so server-side imports
+// that already use "from @/lib/stockData" continue to work unchanged.
+export type { StockData } from "./stockTypes";
+export { formatNumber, formatBigNumber, formatPct } from "./stockTypes";
 
 /**
  * Yahoo Finance v3 sometimes returns numeric share-count fields as Date objects
@@ -34,41 +44,8 @@ function safeNum(val: unknown): number | null {
   return null;
 }
 
-export interface StockData {
-  ticker: string;
-  companyName: string;
-  price: number;
-  priceChange: number;
-  priceChangePct: number;
-  volume: number;
-  avgVolume: number;
-  marketCap: number | null;
-  sector: string | null;
-  industry: string | null;
-  // Short data (biweekly FINRA, ~2 wk lag via Yahoo)
-  sharesShort: number | null;
-  sharesShortPriorMonth: number | null;
-  shortFloatPct: number | null;
-  daysToCover: number | null;
-  floatShares: number | null;
-  sharesOutstanding: number | null;
-  // Calculated technicals
-  rsi14: number | null;
-  rvol: number | null;
-  sma50: number | null;
-  sma200: number | null;
-  above50MA: boolean;
-  above200MA: boolean;
-  // Options
-  callPutRatio: number | null;
-  // Social sentiment (r/WallStreetBets, free Reddit API)
-  wsbMentions: number; // posts mentioning this ticker in the past week
-  wsbScore: number;    // 0=no buzz, 1=light, 2=moderate, 3=high
-  // Score
-  score: ScoreBreakdown;
-  // Meta
-  fetchedAt: string;
-}
+// StockData interface lives in stockTypes.ts — imported and re-exported above.
+// Use `import type { StockData } from "@/lib/stockData"` or "@/lib/stockTypes" — both work.
 
 /**
  * Fetch recent r/WallStreetBets post count mentioning a ticker.
@@ -249,25 +226,4 @@ export async function fetchAllStocks(tickers: string[]): Promise<StockData[]> {
   return results;
 }
 
-export function formatNumber(n: number | null, decimals = 2): string {
-  if (n === null) return "—";
-  return n.toLocaleString("en-US", {
-    minimumFractionDigits: decimals,
-    maximumFractionDigits: decimals,
-  });
-}
-
-export function formatBigNumber(n: number | null): string {
-  if (n === null) return "—";
-  if (n >= 1e12) return `${(n / 1e12).toFixed(2)}T`;
-  if (n >= 1e9) return `${(n / 1e9).toFixed(2)}B`;
-  if (n >= 1e6) return `${(n / 1e6).toFixed(2)}M`;
-  if (n >= 1e3) return `${(n / 1e3).toFixed(1)}K`;
-  return n.toString();
-}
-
-export function formatPct(n: number | null, alreadyPct = false): string {
-  if (n === null) return "—";
-  const val = alreadyPct ? n : n * 100;
-  return `${val.toFixed(2)}%`;
-}
+// formatNumber, formatBigNumber, formatPct — re-exported from stockTypes.ts above.

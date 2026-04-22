@@ -10,7 +10,7 @@
 
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { useLiveQuotes } from "@/hooks/useLiveQuotes";
-import { formatNumber } from "@/lib/stockData";
+import { formatNumber } from "@/lib/stockTypes";
 
 interface LivePriceProps {
   ticker: string;
