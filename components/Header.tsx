@@ -2,32 +2,44 @@ import Link from "next/link";
 import { Activity } from "lucide-react";
 import DataSourceLogo from "./DataSourceLogo";
 
+// Google's favicon service reliably returns the correct brand icon for any domain.
+// All URLs confirmed returning valid PNGs (not error placeholders).
+const GFAV = (domain: string) =>
+  `https://www.google.com/s2/favicons?domain=${domain}&sz=32`;
+
 // Data sources actually used in this app
 const DATA_SOURCES = [
   {
     name: "Yahoo Finance",
-    description: "Price, volume, short interest, options chain",
+    description: "Price, volume, short interest %, options chain",
     href: "https://finance.yahoo.com",
-    favicon: "https://s.yimg.com/cv/apiv2/default/20190822/favicon.ico",
-    // Fallback initials + brand color if favicon fails
+    favicon: GFAV("finance.yahoo.com"),
     initials: "YF",
     color: "#6001D2",
   },
   {
     name: "FINRA",
-    description: "Biweekly short interest reports (official source)",
+    description: "Official biweekly short interest reports",
     href: "https://finra.org/finra-data/browse-catalog/equity-short-interest",
-    favicon: "https://www.finra.org/favicon.ico",
+    favicon: GFAV("finra.org"),
     initials: "FN",
     color: "#003087",
   },
   {
     name: "TradingView",
-    description: "Interactive price charts",
+    description: "Interactive price charts & technical indicators",
     href: "https://www.tradingview.com",
-    favicon: "https://static.tradingview.com/static/images/favicon.ico",
+    favicon: GFAV("tradingview.com"),
     initials: "TV",
     color: "#2962FF",
+  },
+  {
+    name: "Reddit (r/WallStreetBets)",
+    description: "Social sentiment — WSB post mentions (past 7 days)",
+    href: "https://www.reddit.com/r/wallstreetbets",
+    favicon: GFAV("reddit.com"),
+    initials: "RD",
+    color: "#FF4500",
   },
 ];
 

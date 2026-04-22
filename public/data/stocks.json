@@ -24,6 +24,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 4.63298969072165,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.15890001,
         "shortFloatScore": 13,
@@ -49,7 +51,7 @@
         "label": "High",
         "color": "amber"
       },
-      "fetchedAt": "2026-04-22T00:25:47.820Z"
+      "fetchedAt": "2026-04-22T00:42:51.646Z"
     },
     {
       "ticker": "LCID",
@@ -75,6 +77,8 @@
       "above50MA": false,
       "above200MA": false,
       "callPutRatio": 2.0530998053933835,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.4202,
         "shortFloatScore": 26,
@@ -100,7 +104,7 @@
         "label": "Moderate",
         "color": "yellow"
       },
-      "fetchedAt": "2026-04-22T00:25:44.377Z"
+      "fetchedAt": "2026-04-22T00:42:49.016Z"
     },
     {
       "ticker": "SAVA",
@@ -126,6 +130,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": null,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.1489,
         "shortFloatScore": 13,
@@ -151,7 +157,7 @@
         "label": "Moderate",
         "color": "yellow"
       },
-      "fetchedAt": "2026-04-22T00:25:45.964Z"
+      "fetchedAt": "2026-04-22T00:42:49.819Z"
     },
     {
       "ticker": "BYND",
@@ -177,6 +183,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 11.666953693073095,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.3102,
         "shortFloatScore": 20,
@@ -202,7 +210,7 @@
         "label": "Moderate",
         "color": "yellow"
       },
-      "fetchedAt": "2026-04-22T00:25:45.995Z"
+      "fetchedAt": "2026-04-22T00:42:49.858Z"
     },
     {
       "ticker": "BARK",
@@ -228,6 +236,8 @@
       "above50MA": false,
       "above200MA": false,
       "callPutRatio": 3.215924426450742,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.1439,
         "shortFloatScore": 13,
@@ -253,7 +263,7 @@
         "label": "Moderate",
         "color": "yellow"
       },
-      "fetchedAt": "2026-04-22T00:25:48.537Z"
+      "fetchedAt": "2026-04-22T00:42:51.658Z"
     },
     {
       "ticker": "CHPT",
@@ -279,6 +289,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 7.871641791044776,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.16379999,
         "shortFloatScore": 13,
@@ -304,7 +316,7 @@
         "label": "Moderate",
         "color": "yellow"
       },
-      "fetchedAt": "2026-04-22T00:25:45.266Z"
+      "fetchedAt": "2026-04-22T00:42:49.792Z"
     },
     {
       "ticker": "SPCE",
@@ -330,6 +342,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 2.003630705394191,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.2242,
         "shortFloatScore": 20,
@@ -355,7 +369,7 @@
         "label": "Moderate",
         "color": "yellow"
       },
-      "fetchedAt": "2026-04-22T00:25:46.041Z"
+      "fetchedAt": "2026-04-22T00:42:50.723Z"
     },
     {
       "ticker": "MVIS",
@@ -381,6 +395,8 @@
       "above50MA": false,
       "above200MA": false,
       "callPutRatio": 22.3125,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.2191,
         "shortFloatScore": 20,
@@ -406,7 +422,7 @@
         "label": "Moderate",
         "color": "yellow"
       },
-      "fetchedAt": "2026-04-22T00:25:46.873Z"
+      "fetchedAt": "2026-04-22T00:42:50.785Z"
     },
     {
       "ticker": "PLUG",
@@ -432,6 +448,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 6.392906403940887,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.2451,
         "shortFloatScore": 20,
@@ -457,7 +475,7 @@
         "label": "Low",
         "color": "slate"
       },
-      "fetchedAt": "2026-04-22T00:25:45.259Z"
+      "fetchedAt": "2026-04-22T00:42:49.770Z"
     },
     {
       "ticker": "GME",
@@ -483,6 +501,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 5.130914463963224,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.1534,
         "shortFloatScore": 13,
@@ -508,7 +528,7 @@
         "label": "Low",
         "color": "slate"
       },
-      "fetchedAt": "2026-04-22T00:25:44.375Z"
+      "fetchedAt": "2026-04-22T00:42:49.016Z"
     },
     {
       "ticker": "RIVN",
@@ -534,6 +554,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 2.035509694477086,
+      "wsbMentions": 2,
+      "wsbScore": 1,
       "score": {
         "shortFloatPct": 0.1329,
         "shortFloatScore": 13,
@@ -559,7 +581,7 @@
         "label": "Low",
         "color": "slate"
       },
-      "fetchedAt": "2026-04-22T00:25:44.443Z"
+      "fetchedAt": "2026-04-22T00:42:49.017Z"
     },
     {
       "ticker": "OPEN",
@@ -585,6 +607,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 2.5229266743419747,
+      "wsbMentions": 25,
+      "wsbScore": 3,
       "score": {
         "shortFloatPct": 0.1437,
         "shortFloatScore": 13,
@@ -610,7 +634,7 @@
         "label": "Low",
         "color": "slate"
       },
-      "fetchedAt": "2026-04-22T00:25:47.754Z"
+      "fetchedAt": "2026-04-22T00:42:51.826Z"
     },
     {
       "ticker": "HYMC",
@@ -636,6 +660,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 1.6837802485284499,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.17790002,
         "shortFloatScore": 13,
@@ -661,7 +687,7 @@
         "label": "Low",
         "color": "slate"
       },
-      "fetchedAt": "2026-04-22T00:25:48.551Z"
+      "fetchedAt": "2026-04-22T00:42:52.555Z"
     },
     {
       "ticker": "AMC",
@@ -687,6 +713,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 5.427452260486372,
+      "wsbMentions": 4,
+      "wsbScore": 1,
       "score": {
         "shortFloatPct": 0.1531,
         "shortFloatScore": 13,
@@ -712,7 +740,7 @@
         "label": "Low",
         "color": "slate"
       },
-      "fetchedAt": "2026-04-22T00:25:44.372Z"
+      "fetchedAt": "2026-04-22T00:42:49.017Z"
     },
     {
       "ticker": "WKHS",
@@ -738,6 +766,8 @@
       "above50MA": false,
       "above200MA": false,
       "callPutRatio": null,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.0358,
         "shortFloatScore": 0,
@@ -763,7 +793,7 @@
         "label": "Low",
         "color": "slate"
       },
-      "fetchedAt": "2026-04-22T00:25:47.656Z"
+      "fetchedAt": "2026-04-22T00:42:51.635Z"
     },
     {
       "ticker": "CLOV",
@@ -789,6 +819,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 0.9620611035111719,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.0937,
         "shortFloatScore": 6,
@@ -814,7 +846,7 @@
         "label": "Low",
         "color": "slate"
       },
-      "fetchedAt": "2026-04-22T00:25:48.577Z"
+      "fetchedAt": "2026-04-22T00:42:52.510Z"
     },
     {
       "ticker": "COIN",
@@ -840,6 +872,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 3.126852434628369,
+      "wsbMentions": 1,
+      "wsbScore": 1,
       "score": {
         "shortFloatPct": 0.1224,
         "shortFloatScore": 13,
@@ -865,7 +899,7 @@
         "label": "Low",
         "color": "slate"
       },
-      "fetchedAt": "2026-04-22T00:25:46.931Z"
+      "fetchedAt": "2026-04-22T00:42:50.697Z"
     },
     {
       "ticker": "BYFC",
@@ -891,6 +925,8 @@
       "above50MA": false,
       "above200MA": false,
       "callPutRatio": null,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.0023999999,
         "shortFloatScore": 0,
@@ -916,7 +952,7 @@
         "label": "Low",
         "color": "slate"
       },
-      "fetchedAt": "2026-04-22T00:25:45.973Z"
+      "fetchedAt": "2026-04-22T00:42:49.835Z"
     },
     {
       "ticker": "MSTR",
@@ -942,6 +978,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 1.7779171152412838,
+      "wsbMentions": 10,
+      "wsbScore": 3,
       "score": {
         "shortFloatPct": 0.11,
         "shortFloatScore": 13,
@@ -967,7 +1005,7 @@
         "label": "Low",
         "color": "slate"
       },
-      "fetchedAt": "2026-04-22T00:25:46.806Z"
+      "fetchedAt": "2026-04-22T00:42:50.809Z"
     },
     {
       "ticker": "GENI",
@@ -993,6 +1031,8 @@
       "above50MA": false,
       "above200MA": false,
       "callPutRatio": 160.46913580246914,
+      "wsbMentions": 1,
+      "wsbScore": 1,
       "score": {
         "shortFloatPct": 0.0626,
         "shortFloatScore": 6,
@@ -1018,7 +1058,7 @@
         "label": "Negligible",
         "color": "gray"
       },
-      "fetchedAt": "2026-04-22T00:25:47.752Z"
+      "fetchedAt": "2026-04-22T00:42:51.642Z"
     },
     {
       "ticker": "BBWI",
@@ -1044,6 +1084,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 0.8796296296296297,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.080699995,
         "shortFloatScore": 6,
@@ -1069,7 +1111,7 @@
         "label": "Negligible",
         "color": "gray"
       },
-      "fetchedAt": "2026-04-22T00:25:44.436Z"
+      "fetchedAt": "2026-04-22T00:42:48.915Z"
     },
     {
       "ticker": "SNDL",
@@ -1095,6 +1137,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 2.608385370205174,
+      "wsbMentions": 0,
+      "wsbScore": 0,
       "score": {
         "shortFloatPct": 0.006,
         "shortFloatScore": 0,
@@ -1120,7 +1164,7 @@
         "label": "Negligible",
         "color": "gray"
       },
-      "fetchedAt": "2026-04-22T00:25:48.524Z"
+      "fetchedAt": "2026-04-22T00:42:52.580Z"
     },
     {
       "ticker": "HOOD",
@@ -1146,6 +1190,8 @@
       "above50MA": true,
       "above200MA": false,
       "callPutRatio": 1.4732578387791082,
+      "wsbMentions": 5,
+      "wsbScore": 2,
       "score": {
         "shortFloatPct": 0.0429,
         "shortFloatScore": 0,
@@ -1171,10 +1217,10 @@
         "label": "Negligible",
         "color": "gray"
       },
-      "fetchedAt": "2026-04-22T00:25:46.847Z"
+      "fetchedAt": "2026-04-22T00:42:50.755Z"
     }
   ],
-  "lastUpdated": "2026-04-22T00:25:48.577Z",
+  "lastUpdated": "2026-04-22T00:42:52.580Z",
   "fetchedCount": 23,
-  "durationMs": 4785
+  "durationMs": 4427
 }

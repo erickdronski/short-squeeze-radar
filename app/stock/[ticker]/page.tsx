@@ -35,7 +35,7 @@ export default async function StockPage({
   const hexColor = SCORE_COLOR_MAP[stock.score.color];
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 pb-20">
       {/* Back */}
       <Link
         href="/"
@@ -217,6 +217,16 @@ export default async function StockPage({
                   stock.sharesShortPriorMonth !== null &&
                   stock.sharesShort > stock.sharesShortPriorMonth
                 }
+              />
+              <StatRow
+                label="WSB Mentions"
+                value={
+                  stock.wsbMentions > 0
+                    ? `${stock.wsbMentions} posts`
+                    : "None this week"
+                }
+                sub="r/WallStreetBets · 7 days"
+                highlight={stock.wsbMentions >= 5}
               />
               <StatRow
                 label="Market Cap"

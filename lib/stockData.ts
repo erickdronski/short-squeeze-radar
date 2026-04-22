@@ -43,10 +43,36 @@ export interface StockData {
   above200MA: boolean;
   // Options
   callPutRatio: number | null;
+  // Social sentiment (r/WallStreetBets, free Reddit API)
+  wsbMentions: number; // posts mentioning this ticker in the past week
+  wsbScore: number;    // 0=no buzz, 1=light, 2=moderate, 3=high
   // Score
   score: ScoreBreakdown;
   // Meta
   fetchedAt: string;
+}
+
+/**
+ * Fetch recent r/WallStreetBets post count mentioning a ticker.
+ * Free Reddit API — no key required, just a User-Agent header.
+ * Returns { mentions, score } where score: 0=none, 1=light, 2=moderate, 3=high
+ */
+async function fetchWSBMentions(ticker: string): Promise<{ mentions: number; score: number }> {
+  try {
+    const url = `https://www.reddit.com/r/wallstreetbets/search.json?q=${encodeURIComponent(ticker)}&sort=new&restrict_sr=1&t=week&limit=25`;
+    const res = await fetch(url, {
+      headers: { "User-Agent": "SqueezeRadar/1.0 (educational project)" },
+      signal: AbortSignal.timeout(5000),
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return { mentions: 0, score: 0 };
+    const data = await res.json();
+    const mentions: number = data?.data?.children?.length ?? 0;
+    const score = mentions >= 10 ? 3 : mentions >= 5 ? 2 : mentions >= 1 ? 1 : 0;
+    return { mentions, score };
+  } catch {
+    return { mentions: 0, score: 0 };
+  }
 }
 
 async function fetchOptionsCallPutRatio(ticker: string): Promise<number | null> {
@@ -134,8 +160,11 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
     const sharesShortPriorMonth: number | null =
       stats?.sharesShortPriorMonth != null ? stats.sharesShortPriorMonth : null;
 
-    // Options
-    const callPutRatio = await fetchOptionsCallPutRatio(ticker);
+    // Options + social — fetch in parallel
+    const [callPutRatio, wsb] = await Promise.all([
+      fetchOptionsCallPutRatio(ticker),
+      fetchWSBMentions(ticker),
+    ]);
 
     const inputs: ScoringInputs = {
       shortFloatPct,
@@ -174,6 +203,8 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
       above50MA: maSignals.above50,
       above200MA: maSignals.above200,
       callPutRatio,
+      wsbMentions: wsb.mentions,
+      wsbScore: wsb.score,
       score: scoreResult,
       fetchedAt: new Date().toISOString(),
     };
