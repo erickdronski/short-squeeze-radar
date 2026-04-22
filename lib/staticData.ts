@@ -29,7 +29,21 @@ export function loadAllStocks(): StocksFile {
   try {
     const filePath = path.join(process.cwd(), "public", "data", "stocks.json");
     const raw = readFileSync(filePath, "utf-8");
-    _cache = JSON.parse(raw) as StocksFile;
+    const parsed = JSON.parse(raw) as StocksFile;
+    // Sanitise any Date-string values that yahoo-finance2 may have serialised
+    // into numeric fields (e.g. sharesShortPriorMonth stored as ISO string).
+    const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}T/;
+    parsed.stocks = parsed.stocks.map((s) => ({
+      ...s,
+      sharesShort: typeof s.sharesShort === "string" && ISO_DATE_RE.test(s.sharesShort as unknown as string) ? null : s.sharesShort,
+      sharesShortPriorMonth:
+        typeof s.sharesShortPriorMonth === "string" &&
+        ISO_DATE_RE.test(s.sharesShortPriorMonth as unknown as string)
+          ? null
+          : s.sharesShortPriorMonth,
+      floatShares: typeof s.floatShares === "string" && ISO_DATE_RE.test(s.floatShares as unknown as string) ? null : s.floatShares,
+    }));
+    _cache = parsed;
     return _cache;
   } catch {
     // File doesn't exist yet (before first GitHub Actions run)

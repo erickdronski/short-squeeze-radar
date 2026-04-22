@@ -40,7 +40,7 @@ export default function SqueezeExplainer() {
             <TrendingUp className="w-3.5 h-3.5 text-[var(--orange)]" />
           </div>
 
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 overflow-hidden">
             <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
               A{" "}
               <span className="text-[var(--beige)] font-medium">
@@ -51,30 +51,43 @@ export default function SqueezeExplainer() {
               50–500%+ moves in days.
             </p>
 
-            {/* Indicator chips — horizontal scroll on mobile */}
-            <div className="flex gap-1.5 mt-2.5 overflow-x-auto pb-0.5 scrollbar-none">
-              {INDICATORS.map((ind) => {
-                const Icon = ind.icon;
-                return (
-                  <span
-                    key={ind.name}
-                    className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-muted)] whitespace-nowrap shrink-0"
-                  >
-                    <Icon className="w-2.5 h-2.5 text-[var(--orange)]" />
-                    {ind.name}
-                    <span className="text-[var(--text-muted)]/60">
-                      · {ind.weight}
+            {/* Chip row: scrollable with fade-right affordance */}
+            <div className="relative mt-2.5">
+              <div className="flex gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+                {INDICATORS.map((ind) => {
+                  const Icon = ind.icon;
+                  return (
+                    <span
+                      key={ind.name}
+                      className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-muted)] whitespace-nowrap shrink-0"
+                    >
+                      <Icon className="w-2.5 h-2.5 text-[var(--orange)]" />
+                      {ind.name}
+                      <span className="text-[var(--text-muted)]/60">
+                        · {ind.weight}
+                      </span>
                     </span>
-                  </span>
-                );
-              })}
+                  );
+                })}
 
-              {/* WSB chip */}
-              <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-muted)] whitespace-nowrap shrink-0">
-                <MessageSquare className="w-2.5 h-2.5 text-[#FF4500]" />
-                WSB Sentiment
-                <span className="text-[var(--text-muted)]/60">· signal</span>
-              </span>
+                {/* WSB chip */}
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-muted)] whitespace-nowrap shrink-0">
+                  <MessageSquare className="w-2.5 h-2.5 text-[#FF4500]" />
+                  WSB Sentiment
+                  <span className="text-[var(--text-muted)]/60">· signal</span>
+                </span>
+
+                {/* Spacer so last chip isn't flush against edge */}
+                <span className="shrink-0 w-4" aria-hidden />
+              </div>
+              {/* Right fade — scroll affordance */}
+              <div
+                className="absolute right-0 top-0 bottom-0 w-8 pointer-events-none"
+                style={{
+                  background:
+                    "linear-gradient(to right, transparent, var(--bg-card))",
+                }}
+              />
             </div>
           </div>
 

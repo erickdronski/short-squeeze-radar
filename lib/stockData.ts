@@ -16,6 +16,24 @@ const yf = new YahooFinanceClass({
 import { calculateScore, ScoreBreakdown, ScoringInputs } from "./scoring";
 import { rsi, relativeVolume, movingAverageSignals } from "./technicals";
 
+/**
+ * Yahoo Finance v3 sometimes returns numeric share-count fields as Date objects
+ * (the raw API value is a Unix-epoch number and the library mis-types it).
+ * This helper accepts only genuine finite numbers and rejects everything else.
+ */
+function safeNum(val: unknown): number | null {
+  if (val == null) return null;
+  if (val instanceof Date) return null;        // Date object mis-cast
+  if (typeof val === "string") {
+    // ISO date string stored in JSON — also invalid for a share count
+    if (/^\d{4}-\d{2}-\d{2}T/.test(val)) return null;
+    const n = Number(val);
+    return isFinite(n) ? n : null;
+  }
+  if (typeof val === "number") return isFinite(val) ? val : null;
+  return null;
+}
+
 export interface StockData {
   ticker: string;
   companyName: string;
@@ -148,17 +166,12 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
     const rvolVal = relativeVolume(volumes, 20);
     const maSignals = movingAverageSignals(closes);
 
-    // Short data
-    const shortFloatPct: number | null =
-      stats?.shortPercentOfFloat != null ? stats.shortPercentOfFloat : null;
-    const daysToCoverVal: number | null =
-      stats?.shortRatio != null ? stats.shortRatio : null;
-    const floatSharesVal: number | null =
-      stats?.floatShares != null ? stats.floatShares : null;
-    const sharesShort: number | null =
-      stats?.sharesShort != null ? stats.sharesShort : null;
-    const sharesShortPriorMonth: number | null =
-      stats?.sharesShortPriorMonth != null ? stats.sharesShortPriorMonth : null;
+    // Short data — use safeNum() to reject Date objects that yahoo-finance2 sometimes returns
+    const shortFloatPct: number | null = safeNum(stats?.shortPercentOfFloat);
+    const daysToCoverVal: number | null = safeNum(stats?.shortRatio);
+    const floatSharesVal: number | null = safeNum(stats?.floatShares);
+    const sharesShort: number | null = safeNum(stats?.sharesShort);
+    const sharesShortPriorMonth: number | null = safeNum(stats?.sharesShortPriorMonth);
 
     // Options + social — fetch in parallel
     const [callPutRatio, wsb] = await Promise.all([
