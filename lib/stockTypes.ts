@@ -38,6 +38,10 @@ export interface StockData {
   wsbScore: number;
   // Score
   score: ScoreBreakdown;
+  // ~3 months of daily closes (oldest -> newest, ends at latest price) for the
+  // tile sparkline. Lets us render an instant inline SVG instead of a heavy
+  // per-tile TradingView iframe embed.
+  spark: number[];
   // Meta
   fetchedAt: string;
 }

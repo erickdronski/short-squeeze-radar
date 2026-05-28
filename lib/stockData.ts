@@ -169,6 +169,10 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
 
     const scoreResult = calculateScore(inputs);
 
+    // Last ~3 months of daily closes for the tile sparkline (ends at today's price).
+    // Rounded to 4 sig-figs to keep the JSON compact.
+    const spark = closes.slice(-63).map((c) => Math.round(c * 100) / 100);
+
     return {
       ticker: ticker.toUpperCase(),
       companyName: price.longName ?? price.shortName ?? ticker,
@@ -196,6 +200,7 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
       wsbMentions: wsb.mentions,
       wsbScore: wsb.score,
       score: scoreResult,
+      spark,
       fetchedAt: new Date().toISOString(),
     };
   } catch (err) {

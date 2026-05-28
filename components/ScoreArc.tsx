@@ -26,6 +26,12 @@ export default function ScoreArc({
   const endAngle = 30;
   const arcSpan = 240; // degrees
 
+  // Round to 3 decimals so the SVG path string is byte-identical across JS
+  // engines. Math.cos/Math.sin (transcendental fns) aren't guaranteed
+  // bit-identical between Node (SSR) and the browser, so emitting raw floats
+  // causes a React hydration mismatch. Rounding eliminates it.
+  const r3 = (n: number) => Number(n.toFixed(3));
+
   const polarToCartesian = (angleDeg: number) => {
     const rad = ((angleDeg - 90) * Math.PI) / 180;
     return {
@@ -39,7 +45,7 @@ export default function ScoreArc({
     const e = polarToCartesian(end);
     const span = end > start ? end - start : 360 - start + end;
     const largeArc = span > 180 ? 1 : 0;
-    return `M ${s.x} ${s.y} A ${radius} ${radius} 0 ${largeArc} 1 ${e.x} ${e.y}`;
+    return `M ${r3(s.x)} ${r3(s.y)} A ${r3(radius)} ${r3(radius)} 0 ${largeArc} 1 ${r3(e.x)} ${r3(e.y)}`;
   };
 
   const fillAngle =

@@ -3,7 +3,7 @@ import { TrendingUp, TrendingDown, Activity } from "lucide-react";
 import { StockData, formatNumber, formatBigNumber } from "@/lib/stockTypes";
 import { scoreBgClass, SCORE_COLOR_MAP } from "@/lib/scoring";
 import ScoreArc from "./ScoreArc";
-import TradingViewMini from "./TradingViewMini";
+import Sparkline from "./Sparkline";
 
 interface StockTileProps {
   stock: StockData;
@@ -51,9 +51,9 @@ export default function StockTile({ stock, livePrice, liveChangePct }: StockTile
         <ScoreArc score={score.totalScore} color={score.color} size={64} strokeWidth={6} />
       </div>
 
-      {/* Mini chart */}
-      <div className="px-1 -mt-1">
-        <TradingViewMini ticker={stock.ticker} height={110} />
+      {/* Mini chart — instant inline sparkline from stock.spark (no iframe) */}
+      <div className="px-3 -mt-1">
+        <Sparkline data={stock.spark ?? []} height={96} up={isUp} />
       </div>
 
       {/* Price row */}
