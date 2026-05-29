@@ -15,35 +15,46 @@
 export interface ScoreBreakdown {
   /** Short Interest as % of float (e.g. 0.25 = 25%) */
   shortFloatPct: number | null;
-  shortFloatScore: number; // 0–30
-  shortFloatMax: 30;
+  shortFloatScore: number; // 0–25
+  shortFloatMax: 25;
 
   /** Days to Cover (DTC) — shares short / avg daily volume */
   daysToCover: number | null;
-  daysToCoverScore: number; // 0–25
-  daysToCoverMax: 25;
+  daysToCoverScore: number; // 0–20
+  daysToCoverMax: 20;
 
   /** Float size in shares */
   floatShares: number | null;
   floatSizeScore: number; // 0–15
   floatSizeMax: 15;
 
+  /**
+   * Borrow pressure — the real pressure gauge. Cost-to-borrow (CTB) fee +
+   * shares-available scarcity, the free proxy for utilization (true
+   * utilization % is gated to securities-lending desks). Source: iBorrowDesk
+   * / Interactive Brokers feed.
+   */
+  borrowFeePct: number | null; // annualized CTB fee, percent
+  sharesAvailable: number | null; // IBKR shares available to borrow
+  borrowScore: number; // 0–22
+  borrowMax: 22;
+
   /** Relative Volume (current / avg) */
   rvol: number | null;
-  rvolScore: number; // 0–15
-  rvolMax: 15;
+  rvolScore: number; // 0–8
+  rvolMax: 8;
 
   /** Momentum: RSI + price vs moving averages */
   rsi: number | null;
   above50MA: boolean;
   above200MA: boolean;
-  momentumScore: number; // 0–10
-  momentumMax: 10;
+  momentumScore: number; // 0–6
+  momentumMax: 6;
 
   /** Options call/put open interest ratio */
   callPutRatio: number | null;
-  optionsScore: number; // 0–5
-  optionsMax: 5;
+  optionsScore: number; // 0–4
+  optionsMax: 4;
 
   /** Final composite score */
   totalScore: number; // 0–100
@@ -76,28 +87,33 @@ export interface ScoringInputs {
   above50MA: boolean;
   above200MA: boolean;
   callPutRatio: number | null; // calls OI / puts OI
+  borrowFeePct: number | null; // CTB fee %, from iBorrowDesk/IBKR (null if unavailable)
+  sharesAvailable: number | null; // IBKR shares available to borrow (null if unavailable)
 }
 
+// Short interest as % of float — the classic squeeze geometry (0–25).
 function scoreShortFloat(pct: number | null): number {
   if (pct === null) return 0;
-  if (pct >= 0.5) return 30;
-  if (pct >= 0.35) return 26;
-  if (pct >= 0.20) return 20;
-  if (pct >= 0.10) return 13;
-  if (pct >= 0.05) return 6;
+  if (pct >= 0.5) return 25;
+  if (pct >= 0.35) return 21;
+  if (pct >= 0.20) return 16;
+  if (pct >= 0.10) return 10;
+  if (pct >= 0.05) return 5;
   return 0;
 }
 
+// Days to cover — how long shorts would take to exit (0–20).
 function scoreDaysToCover(dtc: number | null): number {
   if (dtc === null) return 0;
-  if (dtc >= 20) return 25;
-  if (dtc >= 12) return 21;
-  if (dtc >= 7)  return 16;
-  if (dtc >= 4)  return 10;
-  if (dtc >= 2)  return 4;
+  if (dtc >= 20) return 20;
+  if (dtc >= 12) return 17;
+  if (dtc >= 7)  return 13;
+  if (dtc >= 4)  return 8;
+  if (dtc >= 2)  return 3;
   return 0;
 }
 
+// Float size — a small float makes covering violent (0–15).
 function scoreFloatSize(shares: number | null): number {
   if (shares === null) return 0;
   const millions = shares / 1_000_000;
@@ -108,15 +124,57 @@ function scoreFloatSize(shares: number | null): number {
   return 0;
 }
 
-function scoreRvol(rvol: number | null): number {
-  if (rvol === null) return 0;
-  if (rvol >= 10) return 15;
-  if (rvol >= 5)  return 12;
-  if (rvol >= 2.5) return 8;
-  if (rvol >= 1.5) return 4;
+// Borrow pressure — cost-to-borrow fee (0–14) + availability scarcity, the free
+// proxy for utilization (0–8). The real pressure gauge: when shares are scarce
+// and expensive to borrow, supply is tapped and shorts are paying to stay in.
+function scoreBorrowFee(feePct: number | null): number {
+  if (feePct === null) return 0;
+  if (feePct >= 50) return 14;
+  if (feePct >= 25) return 12;
+  if (feePct >= 10) return 9;
+  if (feePct >= 5)  return 6;
+  if (feePct >= 2)  return 4;
+  if (feePct >= 1)  return 2;
   return 0;
 }
 
+function scoreAvailability(available: number | null, floatShares: number | null): number {
+  if (available === null) return 0;
+  if (floatShares && floatShares > 0) {
+    const ratio = available / floatShares; // fraction of float still borrowable
+    if (ratio <= 0.001) return 8;
+    if (ratio <= 0.005) return 6;
+    if (ratio <= 0.02)  return 4;
+    if (ratio <= 0.05)  return 2;
+    return 0;
+  }
+  // No float to normalize against — fall back to absolute availability.
+  if (available < 100_000) return 8;
+  if (available < 300_000) return 6;
+  if (available < 1_000_000) return 4;
+  if (available < 5_000_000) return 2;
+  return 0;
+}
+
+function scoreBorrowPressure(
+  feePct: number | null,
+  available: number | null,
+  floatShares: number | null
+): number {
+  return Math.min(scoreBorrowFee(feePct) + scoreAvailability(available, floatShares), 22);
+}
+
+// Relative volume — is it active right now (0–8).
+function scoreRvol(rvol: number | null): number {
+  if (rvol === null) return 0;
+  if (rvol >= 10) return 8;
+  if (rvol >= 5)  return 6;
+  if (rvol >= 2.5) return 4;
+  if (rvol >= 1.5) return 2;
+  return 0;
+}
+
+// Momentum — RSI + price vs moving averages (0–6).
 function scoreMomentum(
   rsiVal: number | null,
   above50: boolean,
@@ -124,21 +182,20 @@ function scoreMomentum(
 ): number {
   let pts = 0;
   if (rsiVal !== null) {
-    if (rsiVal >= 80)      pts += 4;
-    else if (rsiVal >= 70) pts += 3;
-    else if (rsiVal >= 60) pts += 2;
+    if (rsiVal >= 70)      pts += 2;
     else if (rsiVal >= 50) pts += 1;
   }
-  if (above50)  pts += 3;
-  if (above200) pts += 3;
-  return Math.min(pts, 10);
+  if (above50)  pts += 2;
+  if (above200) pts += 2;
+  return Math.min(pts, 6);
 }
 
+// Options call/put OI ratio — bullish option positioning (0–4).
 function scoreOptions(cpr: number | null): number {
   if (cpr === null) return 0;
-  if (cpr >= 3)   return 5;
-  if (cpr >= 2)   return 4;
-  if (cpr >= 1.5) return 3;
+  if (cpr >= 3)   return 4;
+  if (cpr >= 2)   return 3;
+  if (cpr >= 1.5) return 2;
   if (cpr >= 1)   return 1;
   return 0;
 }
@@ -165,6 +222,11 @@ export function calculateScore(inputs: ScoringInputs): ScoreBreakdown {
   const shortFloatScore = scoreShortFloat(inputs.shortFloatPct);
   const daysToCoverScore = scoreDaysToCover(inputs.daysToCover);
   const floatSizeScore = scoreFloatSize(inputs.floatShares);
+  const borrowScore = scoreBorrowPressure(
+    inputs.borrowFeePct,
+    inputs.sharesAvailable,
+    inputs.floatShares
+  );
   const rvolScore = scoreRvol(inputs.rvol);
   const momentumScore = scoreMomentum(
     inputs.rsi,
@@ -177,6 +239,7 @@ export function calculateScore(inputs: ScoringInputs): ScoreBreakdown {
     shortFloatScore +
     daysToCoverScore +
     floatSizeScore +
+    borrowScore +
     rvolScore +
     momentumScore +
     optionsScore;
@@ -184,24 +247,28 @@ export function calculateScore(inputs: ScoringInputs): ScoreBreakdown {
   return {
     shortFloatPct: inputs.shortFloatPct,
     shortFloatScore,
-    shortFloatMax: 30,
+    shortFloatMax: 25,
     daysToCover: inputs.daysToCover,
     daysToCoverScore,
-    daysToCoverMax: 25,
+    daysToCoverMax: 20,
     floatShares: inputs.floatShares,
     floatSizeScore,
     floatSizeMax: 15,
+    borrowFeePct: inputs.borrowFeePct,
+    sharesAvailable: inputs.sharesAvailable,
+    borrowScore,
+    borrowMax: 22,
     rvol: inputs.rvol,
     rvolScore,
-    rvolMax: 15,
+    rvolMax: 8,
     rsi: inputs.rsi,
     above50MA: inputs.above50MA,
     above200MA: inputs.above200MA,
     momentumScore,
-    momentumMax: 10,
+    momentumMax: 6,
     callPutRatio: inputs.callPutRatio,
     optionsScore,
-    optionsMax: 5,
+    optionsMax: 4,
     totalScore,
     label: getLabel(totalScore),
     color: getColor(totalScore),

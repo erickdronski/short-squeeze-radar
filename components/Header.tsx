@@ -41,6 +41,22 @@ const DATA_SOURCES = [
     initials: "RD",
     color: "#FF4500",
   },
+  {
+    name: "iBorrowDesk",
+    description: "Cost-to-borrow & shares-available (Interactive Brokers feed)",
+    href: "https://iborrowdesk.com",
+    favicon: GFAV("iborrowdesk.com"),
+    initials: "iB",
+    color: "#1f9d55",
+  },
+  {
+    name: "Interactive Brokers",
+    description: "Underlying borrow desk — actual fee & share availability",
+    href: "https://www.interactivebrokers.com",
+    favicon: GFAV("interactivebrokers.com"),
+    initials: "IB",
+    color: "#D81222",
+  },
 ];
 
 export default function Header() {

@@ -5,7 +5,19 @@ interface ScoreBreakdownCardProps {
   score: ScoreBreakdown;
 }
 
-const indicators = [
+type Indicator = {
+  key: string;
+  label: string;
+  scoreKey: keyof ScoreBreakdown;
+  maxKey: keyof ScoreBreakdown;
+  valueKey: keyof ScoreBreakdown;
+  format: (v: number | null) => string;
+  description: string;
+  /** Optional richer value text using the whole breakdown (e.g. borrow fee + availability). */
+  display?: (s: ScoreBreakdown) => string;
+};
+
+const indicators: Indicator[] = [
   {
     key: "shortFloat" as const,
     label: "Short Float %",
@@ -38,6 +50,23 @@ const indicators = [
       return `${(v / 1e3).toFixed(1)}K shares`;
     },
     description: "Freely tradeable shares — smaller = more volatile",
+  },
+  {
+    key: "borrow" as const,
+    label: "Borrow Pressure",
+    scoreKey: "borrowScore" as const,
+    maxKey: "borrowMax" as const,
+    valueKey: "borrowFeePct" as const,
+    format: (v: number | null) => (v !== null ? `${v.toFixed(v >= 10 ? 1 : 2)}% CTB` : "—"),
+    display: (s: ScoreBreakdown) => {
+      const fee = s.borrowFeePct != null ? `${s.borrowFeePct.toFixed(s.borrowFeePct >= 10 ? 1 : 2)}% CTB` : "CTB n/a";
+      const avail =
+        s.sharesAvailable != null
+          ? ` · ${s.sharesAvailable >= 1e6 ? (s.sharesAvailable / 1e6).toFixed(1) + "M" : Math.round(s.sharesAvailable / 1e3) + "K"} avail`
+          : "";
+      return fee + avail;
+    },
+    description: "Cost-to-borrow + availability — the utilization proxy (IBKR feed)",
   },
   {
     key: "rvol" as const,
@@ -130,7 +159,7 @@ export default function ScoreBreakdownCard({
                     {ind.label}
                   </span>
                   <span className="text-[var(--text-muted)] text-xs">
-                    {ind.format(val as number | null)}
+                    {ind.display ? ind.display(score) : ind.format(val as number | null)}
                   </span>
                 </div>
                 <span className="text-[var(--text-secondary)] text-xs tabular-nums">

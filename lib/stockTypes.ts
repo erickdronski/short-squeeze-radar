@@ -36,6 +36,21 @@ export interface StockData {
   // Social sentiment (r/WallStreetBets, free Reddit API)
   wsbMentions: number;
   wsbScore: number;
+  // Borrow desk (iBorrowDesk → Interactive Brokers feed) — the real pressure
+  // gauge. Cost-to-borrow + shares-available; the free proxy for utilization.
+  borrowFeePct: number | null;
+  sharesAvailable: number | null;
+  hardToBorrow: boolean;
+  borrowAsOf: string | null;
+  // Catalyst gate (recent news headline) — fuel needs ignition.
+  catalyst: {
+    headline: string;
+    link?: string;
+    publisher?: string;
+    publishedAt?: string;
+    fresh: boolean;
+    ageDays: number | null;
+  } | null;
   // Score
   score: ScoreBreakdown;
   // ~3 months of daily closes (oldest -> newest, ends at latest price) for the

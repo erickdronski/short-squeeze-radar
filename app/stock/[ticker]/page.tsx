@@ -150,6 +150,26 @@ export default async function StockPage({
                 }
               />
               <StatRow
+                label="Cost to Borrow"
+                value={
+                  stock.borrowFeePct !== null
+                    ? `${stock.borrowFeePct.toFixed(stock.borrowFeePct >= 10 ? 1 : 2)}%`
+                    : "—"
+                }
+                sub="CTB fee · IBKR"
+                highlight={stock.borrowFeePct !== null && stock.borrowFeePct >= 10}
+              />
+              <StatRow
+                label="Shares Available"
+                value={
+                  stock.sharesAvailable !== null
+                    ? formatBigNumber(stock.sharesAvailable)
+                    : "—"
+                }
+                sub={stock.hardToBorrow ? "hard to borrow" : "to borrow · IBKR"}
+                highlight={stock.hardToBorrow}
+              />
+              <StatRow
                 label="Rel. Volume"
                 value={
                   stock.rvol !== null ? `${stock.rvol.toFixed(2)}×` : "—"
@@ -245,9 +265,11 @@ export default async function StockPage({
             </div>
 
             <p className="mt-4 text-[10px] text-[var(--text-muted)]">
-              ⓘ Short interest data from FINRA via Yahoo Finance (biweekly reporting, ~2–3 week lag).
-              Price, volume, and technical indicators computed from live market data.
-              Last updated: {new Date(stock.fetchedAt).toLocaleString()}
+              ⓘ Short interest from FINRA via Yahoo Finance (biweekly, ~2–3 week lag).
+              Cost-to-borrow &amp; shares-available from the Interactive Brokers feed
+              via iBorrowDesk{stock.borrowAsOf ? ` (as of ${stock.borrowAsOf})` : ""} —
+              the free proxy for utilization. Price, volume, and technicals from live
+              market data. Last updated: {new Date(stock.fetchedAt).toLocaleString()}
             </p>
           </div>
         </div>
@@ -301,6 +323,22 @@ export default async function StockPage({
                 }`}
               />
               <WatchItem
+                active={stock.hardToBorrow}
+                text={`${
+                  stock.borrowFeePct !== null
+                    ? `${stock.borrowFeePct.toFixed(stock.borrowFeePct >= 10 ? 1 : 2)}% to borrow`
+                    : "Borrow data n/a"
+                }${
+                  stock.sharesAvailable !== null
+                    ? `, ${formatBigNumber(stock.sharesAvailable)} shares available`
+                    : ""
+                } — ${
+                  stock.hardToBorrow
+                    ? "hard-to-borrow: supply tapped, shorts paying up to stay in"
+                    : "easy to borrow: little borrow-side pressure"
+                }`}
+              />
+              <WatchItem
                 active={stock.rvol !== null && stock.rvol >= 2.5}
                 text={`Volume ${
                   stock.rvol !== null ? `${stock.rvol.toFixed(1)}×` : ""
@@ -345,6 +383,10 @@ export default async function StockPage({
                 }
               />
               <CheckItem
+                label="Hard to Borrow (high CTB / scarce supply)"
+                met={stock.hardToBorrow}
+              />
+              <CheckItem
                 label="Volume Spike (RVOL >2.5×)"
                 met={stock.rvol !== null && stock.rvol >= 2.5}
               />
@@ -370,7 +412,58 @@ export default async function StockPage({
                   stock.sharesShort > stock.sharesShortPriorMonth
                 }
               />
+              <CheckItem
+                label="Fresh Catalyst (recent news)"
+                met={!!stock.catalyst?.fresh}
+              />
             </div>
+          </div>
+
+          {/* Catalyst — the ignition. Fuel without it just sits there. */}
+          <div className="rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-5">
+            <h3 className="text-[var(--text-primary)] font-semibold mb-3 text-sm">
+              Catalyst{" "}
+              <span className="text-[var(--text-muted)] font-normal">
+                · fuel needs ignition
+              </span>
+            </h3>
+            {stock.catalyst ? (
+              <a
+                href={stock.catalyst.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block group"
+              >
+                <p className="text-sm text-[var(--text-secondary)] group-hover:text-[var(--text-primary)] transition-colors leading-snug">
+                  {stock.catalyst.headline}
+                </p>
+                <div className="mt-2 flex items-center gap-2 text-[10px] text-[var(--text-muted)]">
+                  {stock.catalyst.publisher && <span>{stock.catalyst.publisher}</span>}
+                  {stock.catalyst.ageDays != null && (
+                    <span>
+                      ·{" "}
+                      {stock.catalyst.ageDays === 0
+                        ? "today"
+                        : `${stock.catalyst.ageDays}d ago`}
+                    </span>
+                  )}
+                  <span
+                    className={`px-1.5 py-0.5 rounded-full ${
+                      stock.catalyst.fresh
+                        ? "bg-[var(--orange)]/15 text-[var(--orange)]"
+                        : "bg-[var(--border)] text-[var(--text-muted)]"
+                    }`}
+                  >
+                    {stock.catalyst.fresh ? "fresh" : "stale"}
+                  </span>
+                </div>
+              </a>
+            ) : (
+              <p className="text-sm text-[var(--text-muted)] leading-snug">
+                No fresh catalyst detected — the fuel may be here, but nothing is
+                lighting it yet.
+              </p>
+            )}
           </div>
         </div>
       </div>

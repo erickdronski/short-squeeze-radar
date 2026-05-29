@@ -20,6 +20,8 @@ const yf = new YahooFinanceClass({
 import { calculateScore, ScoreBreakdown, ScoringInputs } from "./scoring";
 import { rsi, relativeVolume, movingAverageSignals } from "./technicals";
 import { StockData } from "./stockTypes";
+import { fetchBorrowData, isHardToBorrow } from "./borrow";
+import { fetchCatalyst } from "./catalyst";
 
 // Re-export pure types and formatters from stockTypes so server-side imports
 // that already use "from @/lib/stockData" continue to work unchanged.
@@ -150,10 +152,14 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
     const sharesShort: number | null = safeNum(stats?.sharesShort);
     const sharesShortPriorMonth: number | null = safeNum(stats?.sharesShortPriorMonth);
 
-    // Options + social — fetch in parallel
-    const [callPutRatio, wsb] = await Promise.all([
+    const companyName = price.longName ?? price.shortName ?? ticker;
+
+    // Options + social + borrow desk + catalyst — fetch in parallel
+    const [callPutRatio, wsb, borrow, catalyst] = await Promise.all([
       fetchOptionsCallPutRatio(ticker),
       fetchWSBMentions(ticker),
+      fetchBorrowData(ticker),
+      fetchCatalyst(ticker, companyName),
     ]);
 
     const inputs: ScoringInputs = {
@@ -165,6 +171,8 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
       above50MA: maSignals.above50,
       above200MA: maSignals.above200,
       callPutRatio,
+      borrowFeePct: borrow?.feePct ?? null,
+      sharesAvailable: borrow?.available ?? null,
     };
 
     const scoreResult = calculateScore(inputs);
@@ -175,7 +183,7 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
 
     return {
       ticker: ticker.toUpperCase(),
-      companyName: price.longName ?? price.shortName ?? ticker,
+      companyName,
       price: currentPrice,
       priceChange,
       priceChangePct,
@@ -199,6 +207,11 @@ export async function fetchStockData(ticker: string): Promise<StockData | null> 
       callPutRatio,
       wsbMentions: wsb.mentions,
       wsbScore: wsb.score,
+      borrowFeePct: borrow?.feePct ?? null,
+      sharesAvailable: borrow?.available ?? null,
+      hardToBorrow: borrow ? isHardToBorrow(borrow.feePct, borrow.available) : false,
+      borrowAsOf: borrow?.asOf ?? null,
+      catalyst: catalyst ?? null,
       score: scoreResult,
       spark,
       fetchedAt: new Date().toISOString(),

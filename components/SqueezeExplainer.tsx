@@ -10,15 +10,18 @@ import {
   Clock,
   ChevronDown,
   MessageSquare,
+  Lock,
+  Flame,
 } from "lucide-react";
 
 const INDICATORS = [
-  { icon: TrendingUp,     name: "Short Float %",    weight: "30 pts", description: "% of free float currently sold short. Above 20% is elevated; 35%+ is extreme. The higher this is, the more fuel exists for a forced short-covering rally." },
-  { icon: Clock,          name: "Days to Cover",    weight: "25 pts", description: "Shares short ÷ avg daily volume. A high number means shorts are trapped — they can't exit without moving the price violently against themselves." },
+  { icon: TrendingUp,     name: "Short Float %",    weight: "25 pts", description: "% of free float currently sold short. Above 20% is elevated; 35%+ is extreme. High short interest on a small float is the classic squeeze geometry." },
+  { icon: Lock,           name: "Borrow Pressure",  weight: "22 pts", description: "Cost-to-borrow (CTB) fee + shares-available scarcity, from the Interactive Brokers feed via iBorrowDesk. The real pressure gauge: when shares are scarce and expensive to borrow, supply is tapped and shorts are paying up to stay short. This is the free proxy for utilization — true utilization % is gated to securities-lending desks (Ortex, S3)." },
+  { icon: Clock,          name: "Days to Cover",    weight: "20 pts", description: "Shares short ÷ avg daily volume. A high number means shorts are trapped — they can't exit without moving the price violently against themselves." },
   { icon: BarChart2,      name: "Float Size",       weight: "15 pts", description: "Freely tradeable shares. Small floats act as amplifiers — fewer shares means less supply for short sellers to buy back, creating a liquidity vacuum." },
-  { icon: Activity,       name: "Rel. Volume",      weight: "15 pts", description: "Current volume ÷ 20-day average. A spike (RVOL >5×) signals a live catalyst — potentially the first shorts covering and triggering the cascade." },
-  { icon: Zap,            name: "Momentum",         weight: "10 pts", description: "RSI(14) + price vs. 50/200-day moving averages. Price reclaiming key MAs puts stop-losses directly in the path of the remaining shorts." },
-  { icon: AlertTriangle,  name: "Options Flow",     weight: "5 pts",  description: "Call / Put open interest ratio. Heavy call buying forces market makers to buy shares as delta hedges — mechanical fuel layered on top of the short squeeze (a gamma squeeze)." },
+  { icon: Activity,       name: "Rel. Volume",      weight: "8 pts",  description: "Current volume ÷ 20-day average. A spike (RVOL >5×) signals a live catalyst — potentially the first shorts covering and triggering the cascade." },
+  { icon: Zap,            name: "Momentum",         weight: "6 pts",  description: "RSI(14) + price vs. 50/200-day moving averages. Price reclaiming key MAs puts stop-losses directly in the path of the remaining shorts." },
+  { icon: AlertTriangle,  name: "Options Flow",     weight: "4 pts",  description: "Call / Put open interest ratio. Heavy call buying forces market makers to buy shares as delta hedges — mechanical fuel layered on top (a gamma squeeze)." },
 ];
 
 const HISTORY = [
@@ -75,6 +78,13 @@ export default function SqueezeExplainer() {
                   <MessageSquare className="w-2.5 h-2.5 text-[#FF4500]" />
                   WSB Sentiment
                   <span className="text-[var(--text-muted)]/60">· signal</span>
+                </span>
+
+                {/* Catalyst gate chip — fuel needs ignition */}
+                <span className="inline-flex items-center gap-1 text-[10px] font-medium px-2 py-1 rounded-full bg-[var(--bg-secondary)] border border-[var(--border)] text-[var(--text-muted)] whitespace-nowrap shrink-0">
+                  <Flame className="w-2.5 h-2.5 text-[var(--orange)]" />
+                  Catalyst
+                  <span className="text-[var(--text-muted)]/60">· gate</span>
                 </span>
 
                 {/* Spacer so last chip isn't flush against edge */}
@@ -189,10 +199,13 @@ export default function SqueezeExplainer() {
             {/* Data note */}
             <p className="text-[10px] text-[var(--text-muted)] leading-relaxed">
               ⓘ Short Interest % and Days to Cover from FINRA via Yahoo Finance
-              (biweekly, ~2–3 week lag). Price, RSI, and MAs from live market
-              data. WSB mentions from Reddit&apos;s public API (past 7 days).
-              Scores represent structural conditions only — a catalyst is
-              required for a squeeze to materialize.
+              (biweekly, ~2–3 week lag). Cost-to-borrow &amp; shares-available
+              from the Interactive Brokers feed via iBorrowDesk — the free proxy
+              for utilization (true utilization % is gated to securities-lending
+              desks like Ortex / S3). Price, RSI, and MAs from live market data.
+              WSB mentions from Reddit&apos;s public API. The score measures
+              stored fuel; a fresh catalyst is the ignition — surfaced as a
+              separate gate, never folded into the score.
             </p>
           </div>
         )}
