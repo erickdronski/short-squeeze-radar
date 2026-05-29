@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -8,12 +8,16 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "SqueezeRadar — Short Squeeze Dashboard",
   description:
-    "Real-time short squeeze confidence scoring for US equities. Track short interest, days to cover, relative volume, and momentum signals.",
+    "Real-time short squeeze confidence scoring for US equities. Short interest, borrow pressure (cost-to-borrow + availability), days to cover, float, and catalysts.",
   openGraph: {
     title: "SqueezeRadar",
     description: "Real-time short squeeze confidence dashboard",
     type: "website",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#181512",
 };
 
 export default function RootLayout({
