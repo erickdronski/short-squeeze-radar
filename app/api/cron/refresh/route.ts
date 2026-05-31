@@ -15,9 +15,19 @@ import { revalidatePath } from "next/cache";
 export async function GET(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   const expectedSecret = process.env.CRON_SECRET;
+  const isProd = process.env.NODE_ENV === "production";
 
-  // On Vercel, cron jobs send the CRON_SECRET automatically.
-  // If not set, allow the request (useful in dev).
+  // Fail CLOSED in production. Vercel cron sends `Authorization: Bearer
+  // <CRON_SECRET>` automatically, so the legit job still passes. If the secret
+  // isn't configured in prod we refuse rather than run unauthenticated — an
+  // open endpoint lets anyone force cache invalidation (extra upstream load).
+  // In dev (no NODE_ENV=production) an unset secret stays open for convenience.
+  if (isProd && !expectedSecret) {
+    return NextResponse.json(
+      { error: "CRON_SECRET not configured" },
+      { status: 503 }
+    );
+  }
   if (expectedSecret && authHeader !== `Bearer ${expectedSecret}`) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
